@@ -1,6 +1,6 @@
 use crate::domain::entities::portfolio::CurrentPortfolio;
 
-use super::sdk::Sharesies;
+use super::sharesies::Sharesies;
 
 impl Sharesies {
     pub async fn get_portfolio(&self) -> Result<CurrentPortfolio, String> {

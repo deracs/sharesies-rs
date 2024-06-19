@@ -1,7 +1,7 @@
 use crate::domain::entities::login::LoginRequest;
 use crate::domain::entities::token::Token;
 
-use super::sdk::Sharesies;
+use super::sharesies::Sharesies;
 
 impl Sharesies {
     pub async fn login(&self, email: String, password: String) -> Result<(), String> {

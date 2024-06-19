@@ -1,6 +1,6 @@
 use crate::domain::entities::instrument::{InstrumentRequest, InstrumentResponse};
 
-use super::sdk::Sharesies;
+use super::sharesies::Sharesies;
 
 impl Sharesies {
     pub async fn get_instruments(
