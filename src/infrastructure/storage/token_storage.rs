@@ -1,5 +1,7 @@
 use std::sync::{Arc, Mutex};
 
+use log::error;
+
 use crate::domain::entities::{login::LoginResponse, token::Token};
 
 #[derive(Debug, Clone)]
@@ -17,23 +19,43 @@ impl TokenStorage {
     }
 
     pub fn store_token(&self, token: Token) {
-        let mut guard = self.token.lock().unwrap();
-        *guard = Some(token);
+        if let Ok(mut guard) = self.token.lock() {
+            *guard = Some(token);
+        } else {
+            // handle the error, e.g., log it or return an error
+            error!("Failed to lock token mutex");
+        }
     }
 
     pub fn store_login(&self, login: LoginResponse) {
-        let mut guard = self.login.lock().unwrap();
-        *guard = Some(login);
+        if let Ok(mut guard) = self.login.lock() {
+            *guard = Some(login);
+        } else {
+            // handle the error, e.g., log it or return an error
+            error!("Failed to lock login mutex");
+        }
     }
 
     pub fn get_token(&self) -> Option<Token> {
-        let guard = self.token.lock().unwrap();
-        guard.clone()
+        match self.token.lock() {
+            Ok(guard) => guard.clone(),
+            Err(_) => {
+                // handle the error, e.g., log it or return None
+                error!("Failed to lock token mutex");
+                None
+            }
+        }
     }
 
     pub fn get_login(&self) -> Option<LoginResponse> {
-        let guard = self.login.lock().unwrap();
-        guard.clone()
+        match self.login.lock() {
+            Ok(guard) => guard.clone(),
+            Err(_) => {
+                // handle the error, e.g., log it or return None
+                error!("Failed to lock login mutex");
+                None
+            }
+        }
     }
 }
 

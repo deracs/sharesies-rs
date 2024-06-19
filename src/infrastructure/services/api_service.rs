@@ -25,10 +25,6 @@ impl ApiService {
         }
     }
 
-    pub fn with_token_storage(token_storage: TokenStorage) -> Self {
-        Self::new(token_storage)
-    }
-
     pub async fn get(&self, url: &str, headers: Option<HeaderMap>) -> Result<String, String> {
         let request = self.client.get(url);
 

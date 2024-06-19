@@ -1,4 +1,5 @@
 pub mod api_endpoint;
+pub mod instrument;
 pub mod login;
 pub mod portfolio;
 pub mod raikaia_token;
