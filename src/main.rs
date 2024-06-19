@@ -15,9 +15,18 @@ async fn main() {
     let db_type = std::env::var("DB_TYPE").unwrap_or_else(|_| "inmemory".to_string());
 
     let repo: Box<dyn StorageRepository> = match db_type.as_str() {
-        "sqlite" => Box::new(SQLiteRepository::new()),
-        "surreal" => Box::new(SurrealDBRepository::new().await),
-        _ => Box::new(InMemoryRepository::new()),
+        "sqlite" => {
+            println!("Using SQLite as the storage backend");
+            Box::new(SQLiteRepository::new())
+        }
+        "surreal" => {
+            println!("Using SurrealDB as the storage backend");
+            Box::new(SurrealDBRepository::new().await)
+        }
+        _ => {
+            println!("Using InMemory storage as the storage backend");
+            Box::new(InMemoryRepository::new())
+        }
     };
 
     check_portfolio_notification(repo).await;
