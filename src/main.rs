@@ -1,60 +1,138 @@
-pub mod application;
-pub mod domain;
-pub mod infrastructure;
-pub mod presentation;
-
-use domain::entities::instrument::InstrumentRequest;
 use dotenv::dotenv;
 use env_logger::Env;
-use log::info;
-pub use presentation::sdk::Sharesies;
+use notify_rust::Notification;
+use sdk::presentation::sdk::Sharesies;
+use serde::{Deserialize, Serialize};
 use std::env;
+use surrealdb::engine::remote::ws::Ws;
+use surrealdb::sql::Thing;
+use surrealdb::Surreal;
+use tokio::time::{sleep, Duration};
+
+#[derive(Debug, Serialize, Deserialize)]
+struct PortfolioRecord {
+    id: Thing,
+    value: f64,
+    timestamp: String,
+}
+
+#[derive(Debug, Deserialize)]
+struct CreatedRecord {
+    #[allow(dead_code)]
+    id: Thing,
+}
 
 #[tokio::main]
 async fn main() {
     dotenv().ok();
-    env_logger::Builder::from_env(Env::default().default_filter_or("info")).init();
+    env_logger::Builder::from_env(Env::default().default_filter_or("println")).init();
+
+    // Initialize SurrealDB client
+    let db = Surreal::new::<Ws>("127.0.0.1:8000").await.unwrap();
+
+    // Select a specific namespace / database
+    db.use_ns("test").use_db("test").await.unwrap();
 
     let sdk = Sharesies::new();
 
-    match sdk
-        .authenticate(
-            env::var("EMAIL").expect("EMAIL must be set"),
-            env::var("PASSWORD").expect("PASSWORD must be set"),
-        )
-        .await
-    {
-        Ok(token) => {
-            info!("Authenticated successfully: {:?}", token);
+    // Get the absolute path to the icon
+    let icon = "resources/icon.png"; // Ensure this path is correct
+
+    loop {
+        if let Err(err) = sdk
+            .authenticate(
+                env::var("EMAIL").expect("EMAIL must be set"),
+                env::var("PASSWORD").expect("PASSWORD must be set"),
+            )
+            .await
+        {
+            println!("Authentication failed: {}", err);
+            sleep(Duration::from_secs(20)).await;
+            continue;
+        } else {
+            println!("Authenticated successfully");
+        }
+
+        let mut previous_portfolio_value: Option<f64> = None;
+
+        loop {
+            println!("Checking portfolio value...");
             match sdk.get_portfolio().await {
-                Ok(portfolio) => println!("Retrieved portfolio: {:?}", portfolio),
-                Err(err) => info!("Failed to retrieve portfolio: {}", err),
+                Ok(portfolio) => {
+                    let current_value = portfolio.portfolio_value;
+                    let formatted_value = format!("NZD {:.2}", current_value);
+                    let timestamp = chrono::Utc::now().to_rfc3339();
+
+                    // Save current portfolio value to SurrealDB
+                    let record = PortfolioRecord {
+                        id: Thing::from(("portfolio", timestamp.as_str())),
+                        value: current_value,
+                        timestamp: timestamp.clone(),
+                    };
+
+                    let created: Option<CreatedRecord> = db
+                        .create(("portfolio", timestamp.as_str()))
+                        .content(&record)
+                        .await
+                        .unwrap();
+
+                    if let Some(_created_record) = created {
+                        if let Some(prev_value) = previous_portfolio_value {
+                            let difference = current_value - prev_value;
+                            if difference > 0.0 {
+                                Notification::new()
+                                    .summary("Sharesies: Portfolio Increase")
+                                    .body(&format!(
+                                        "Portfolio value has increased to {} (up by NZD {:.2})",
+                                        formatted_value, difference
+                                    ))
+                                    .icon(icon)
+                                    .show()
+                                    .unwrap();
+                            } else if difference < 0.0 {
+                                Notification::new()
+                                    .summary("Sharesies: Portfolio Decrease")
+                                    .body(&format!(
+                                        "Portfolio value has decreased to {} (down by NZD {:.2})",
+                                        formatted_value,
+                                        difference.abs()
+                                    ))
+                                    .icon(icon)
+                                    .show()
+                                    .unwrap();
+                            }
+                            println!(
+                                "Previous value: NZD {:.2}, Current value: NZD {:.2}, Difference: NZD {:.2}",
+                                prev_value, current_value, difference
+                            );
+                        } else {
+                            // Notify the first portfolio value
+                            Notification::new()
+                                .summary("Sharesies: Portfolio Value")
+                                .body(&format!(
+                                    "The initial portfolio value is {}",
+                                    formatted_value
+                                ))
+                                .icon(icon)
+                                .show()
+                                .unwrap();
+                            println!("Initial portfolio value: NZD {:.2}", current_value);
+                        }
+
+                        previous_portfolio_value = Some(current_value);
+                    }
+                }
+                Err(err) => {
+                    println!("Failed to retrieve portfolio: {}", err);
+                    if err.to_string().contains("403 Forbidden") {
+                        println!("Re-authenticating due to 403 Forbidden error...");
+                        break; // Break the inner loop to re-authenticate
+                    }
+                }
             }
 
-            let instrument_request = InstrumentRequest::create(
-                vec![
-                    "a31d15e0-f08b-4e9d-8294-beb76a159346".to_string(),
-                    "b8b7ef58-b270-4762-a256-9d68aebc3e23".to_string(),
-                    "24f86dd0-5869-4992-8398-4746e44e8d0f".to_string(),
-                    "af87fb44-ebf6-4239-ba08-ae1cc9a6461c".to_string(),
-                    "67a17798-c341-4af3-a06e-5a621d342adb".to_string(),
-                    "5462d6d3-ad50-441a-a15b-e00d8bb37e17".to_string(),
-                    "5df0acd5-3e08-41ca-b8ce-1046f39acd41".to_string(),
-                    "cb928f59-a818-4ea2-adc8-ec77779609c4".to_string(),
-                    "84fb0b94-e7dd-4a48-996d-fd261b781c11".to_string(),
-                    "1fa21793-40ff-47cc-99e1-0f94d4341e26".to_string(),
-                    "8cd3115a-831b-4a5a-9cdd-a5d523c6814f".to_string(),
-                    "3ab93925-eeb0-4de8-b003-1a34100a874d".to_string(),
-                    "77866efa-d81e-4f71-beaf-371bb210ac8c".to_string(),
-                ],
-                Some(1),
-                Some(10),
-            );
-            match sdk.get_instruments(instrument_request).await {
-                Ok(instruments) => println!("Retrieved instruments: {:?}", instruments),
-                Err(err) => info!("Failed to retrieve instruments: {}", err),
-            }
+            // Sleep for 10 minutes before checking again
+            sleep(Duration::from_secs(600)).await;
         }
-        Err(err) => info!("Authentication failed: {}", err),
     }
 }
