@@ -4,6 +4,7 @@ use crate::domain::entities::raikaia_token::RakiaiaToken;
 use crate::domain::entities::token::Token;
 use crate::domain::repositories::auth_repository::AuthRepository;
 use async_trait::async_trait;
+use log::info;
 use serde_json::from_str;
 
 use super::api_service::ApiService;
@@ -12,7 +13,8 @@ use super::api_service::ApiService;
 impl AuthRepository for ApiService {
     async fn login(&self, user: &LoginRequest) -> Result<LoginResponse, String> {
         let url = ApiEndpoint::IdentityLogin.url();
-        let response = self.post(url, user).await?;
+        let response = self.post(url, user, None).await?;
+        info!("Response: {}", response);
         let login: LoginResponse = from_str(&response).map_err(|e| e.to_string())?;
         Ok(login)
     }
@@ -24,7 +26,8 @@ impl AuthRepository for ApiService {
             acting_as_id
         );
 
-        let response = self.get(&url).await?;
+        let response = self.get(&url, None).await?;
+        info!("Response: {}", response);
         let rakiaia_token: RakiaiaToken = from_str(&response).map_err(|e| e.to_string())?;
         Ok(rakiaia_token)
     }

@@ -1,5 +1,6 @@
 use crate::infrastructure::storage::token_storage::TokenStorage;
 use reqwest::cookie::Jar;
+use reqwest::header::HeaderMap;
 use reqwest::Client;
 use serde::Serialize;
 use std::sync::Arc;
@@ -7,7 +8,6 @@ use std::sync::Arc;
 #[derive(Debug, Clone)]
 pub struct ApiService {
     client: Client,
-    cookie_store: Arc<Jar>,
     pub token_storage: TokenStorage,
 }
 
@@ -21,13 +21,27 @@ impl ApiService {
 
         Self {
             client,
-            cookie_store,
             token_storage,
         }
     }
 
-    pub async fn get(&self, url: &str) -> Result<String, String> {
+    pub fn with_token_storage(token_storage: TokenStorage) -> Self {
+        Self::new(token_storage)
+    }
+
+    pub async fn get(&self, url: &str, headers: Option<HeaderMap>) -> Result<String, String> {
         let request = self.client.get(url);
+
+        let request = match headers {
+            Some(headers) => {
+                let mut request = request;
+                for (key, value) in headers.iter() {
+                    request = request.header(key, value);
+                }
+                request
+            }
+            None => request,
+        };
 
         let response = request.send().await.map_err(|e| e.to_string())?;
         let status = response.status();
@@ -40,8 +54,23 @@ impl ApiService {
         }
     }
 
-    pub async fn post<T: Serialize>(&self, url: &str, body: &T) -> Result<String, String> {
+    pub async fn post<T: Serialize>(
+        &self,
+        url: &str,
+        body: &T,
+        headers: Option<HeaderMap>,
+    ) -> Result<String, String> {
         let request = self.client.post(url).json(body);
+        let request = match headers {
+            Some(headers) => {
+                let mut request = request;
+                for (key, value) in headers.iter() {
+                    request = request.header(key, value);
+                }
+                request
+            }
+            None => request,
+        };
 
         let response = request.send().await.map_err(|e| e.to_string())?;
         let status = response.status();

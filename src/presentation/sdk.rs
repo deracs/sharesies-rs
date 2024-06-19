@@ -53,8 +53,8 @@ impl SDK {
         Ok(token)
     }
 
-    pub async fn get_portfolio(&self, portfolio_id: &str) -> Result<CurrentPortfolio, String> {
-        self.get_portfolio_use_case.execute(portfolio_id).await
+    pub async fn get_portfolio(&self) -> Result<CurrentPortfolio, String> {
+        self.get_portfolio_use_case.execute().await
     }
 }
 

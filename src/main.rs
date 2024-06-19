@@ -20,13 +20,14 @@ async fn main() {
 
     let sdk = SDK::new();
 
-    match sdk.authenticate(email.clone(), password.clone()).await {
-        Ok(_) => info!("Login successful"),
-        Err(err) => info!("Login failed: {}", err),
+    match sdk.authenticate(email, password).await {
+        Ok(token) => {
+            info!("Authenticated successfully: {:?}", token);
+            match sdk.get_portfolio().await {
+                Ok(portfolio) => info!("Retrieved portfolio: {:?}", portfolio),
+                Err(err) => info!("Failed to retrieve portfolio: {}", err),
+            }
+        }
+        Err(err) => info!("Authentication failed: {}", err),
     }
-
-    // match sdk.get_portfolio().await {
-    //     Ok(_) => info!("Portfolio retrieved successfully"),
-    //     Err(err) => info!("Failed to retrieve portfolio: {}", err),
-    // }
 }

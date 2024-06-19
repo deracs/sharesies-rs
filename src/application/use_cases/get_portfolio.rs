@@ -10,7 +10,7 @@ impl<R: PortfolioRepository> GetPortfolioUseCase<R> {
         Self { repository }
     }
 
-    pub async fn execute(&self, portfolio_id: &str) -> Result<CurrentPortfolio, String> {
-        self.repository.get_portfolio(portfolio_id).await
+    pub async fn execute(&self) -> Result<CurrentPortfolio, String> {
+        self.repository.get_portfolio().await
     }
 }
