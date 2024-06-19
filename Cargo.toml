@@ -20,3 +20,7 @@ notify-rust = "4.5"
 surrealdb = { version = "1.5.3" }
 rusqlite = { version = "0.31.0", features = ["bundled"] }
 chrono = "0.4.38"
+
+
+[dev-dependencies]
+mockito = "1.4.0"

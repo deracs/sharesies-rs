@@ -1,4 +1,5 @@
 use crate::domain::entities::instrument::{InstrumentRequest, InstrumentResponse};
+use crate::domain::errors::SharesiesError;
 use crate::domain::repositories::instrument_repository::InstrumentRepository;
 
 pub struct GetInstrumentsUseCase<R: InstrumentRepository> {
@@ -10,7 +11,10 @@ impl<R: InstrumentRepository> GetInstrumentsUseCase<R> {
         Self { repository }
     }
 
-    pub async fn execute(&self, data: InstrumentRequest) -> Result<InstrumentResponse, String> {
+    pub async fn execute(
+        &self,
+        data: InstrumentRequest,
+    ) -> Result<InstrumentResponse, SharesiesError> {
         self.repository.get_instruments(data).await
     }
 }

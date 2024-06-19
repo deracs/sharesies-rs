@@ -1,3 +1,4 @@
+use crate::domain::errors::SharesiesError;
 use crate::infrastructure::storage::token_storage::TokenStorage;
 use reqwest::cookie::Jar;
 use reqwest::header::HeaderMap;
@@ -25,29 +26,22 @@ impl ApiService {
         }
     }
 
-    pub async fn get(&self, url: &str, headers: Option<HeaderMap>) -> Result<String, String> {
-        let request = self.client.get(url);
+    pub async fn get(
+        &self,
+        url: &str,
+        headers: Option<HeaderMap>,
+    ) -> Result<reqwest::Response, SharesiesError> {
+        let mut request = self.client.get(url);
 
-        let request = match headers {
-            Some(headers) => {
-                let mut request = request;
-                for (key, value) in headers.iter() {
-                    request = request.header(key, value);
-                }
-                request
-            }
-            None => request,
-        };
-
-        let response = request.send().await.map_err(|e| e.to_string())?;
-        let status = response.status();
-        let text = response.text().await.map_err(|e| e.to_string())?;
-
-        if status.is_success() {
-            Ok(text)
-        } else {
-            Err(format!("Failed to call API: {}", status))
+        if let Some(headers) = headers {
+            request = request.headers(headers);
         }
+
+        let response = request
+            .send()
+            .await
+            .map_err(|e| SharesiesError::HttpError(e.to_string()))?;
+        Ok(response)
     }
 
     pub async fn post<T: Serialize>(
@@ -55,28 +49,18 @@ impl ApiService {
         url: &str,
         body: &T,
         headers: Option<HeaderMap>,
-    ) -> Result<String, String> {
-        let request = self.client.post(url).json(body);
-        let request = match headers {
-            Some(headers) => {
-                let mut request = request;
-                for (key, value) in headers.iter() {
-                    request = request.header(key, value);
-                }
-                request
-            }
-            None => request,
-        };
+    ) -> Result<reqwest::Response, SharesiesError> {
+        let mut request = self.client.post(url).json(body);
 
-        let response = request.send().await.map_err(|e| e.to_string())?;
-        let status = response.status();
-        let text = response.text().await.map_err(|e| e.to_string())?;
-
-        if status.is_success() {
-            Ok(text)
-        } else {
-            Err(format!("Failed to call API: {}", status))
+        if let Some(headers) = headers {
+            request = request.headers(headers);
         }
+
+        let response = request
+            .send()
+            .await
+            .map_err(|e| SharesiesError::HttpError(e.to_string()))?;
+        Ok(response)
     }
 }
 

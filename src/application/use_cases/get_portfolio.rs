@@ -1,4 +1,5 @@
 use crate::domain::entities::portfolio::CurrentPortfolio;
+use crate::domain::errors::SharesiesError;
 use crate::domain::repositories::portfolio_repository::PortfolioRepository;
 
 pub struct GetPortfolioUseCase<R: PortfolioRepository> {
@@ -10,7 +11,7 @@ impl<R: PortfolioRepository> GetPortfolioUseCase<R> {
         Self { repository }
     }
 
-    pub async fn execute(&self) -> Result<CurrentPortfolio, String> {
+    pub async fn execute(&self) -> Result<CurrentPortfolio, SharesiesError> {
         self.repository.get_portfolio().await
     }
 }

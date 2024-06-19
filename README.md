@@ -22,7 +22,7 @@ This project provides a Rust SDK for interacting with the Shares API. It include
 
 ```bash
 git clone https://github.com/deracs/shares-rs
-cd rust-shares-api-sdk
+cd shares-rs
 ```
 
 2. Create a `.env` file in the root directory:
@@ -30,6 +30,8 @@ cd rust-shares-api-sdk
 ```env
 EMAIL=your_email@example.com
 PASSWORD=your_password
+RUST_LOG=off # info, debug, off
+DB_TYPE=sqlite # surreal, sqlite, inmemory
 ```
 
 ### Running the Application
@@ -40,49 +42,10 @@ PASSWORD=your_password
 cargo run
 ```
 
-### Usage
-
-#### Authenticate and Fetch Portfolio
-
-```rust
-use crate::presentation::sdk::SDK;
-use dotenv::dotenv;
-use std::env;
-use log::info;
-use env_logger::Env;
-
-#[tokio::main]
-async fn main() {
-    dotenv().ok();
-    env_logger::Builder::from_env(Env::default().default_filter_or("info")).init();
-
-    let email = env::var("EMAIL").expect("EMAIL must be set");
-    let password = env::var("PASSWORD").expect("PASSWORD must be set");
-
-    let sdk = SDK::new();
-
-    match sdk
-        .authenticate(email.clone(), password.clone())
-        .await
-    {
-        Ok(token) => {
-            info!("Authentication successful: {:?}", token);
-        }
-        Err(err) => {
-            info!("Authentication failed: {}", err);
-        }
-    }
-
-    match sdk.get_portfolio().await {
-        Ok(_) => info!("Portfolio retrieved successfully"),
-        Err(err) => info!("Failed to retrieve portfolio: {}", err),
-    }
-}
-```
-
 ### To Do
 
 - Reauthenticate when token expires.
+  - Currently when it 403's it just authenticates again.
 
 ### Contributing
 
