@@ -37,7 +37,7 @@ impl InstrumentRepository for ApiService {
             );
 
             let response = self
-                .post(&url, &data, Some(headers))
+                .post(url, &data, Some(headers))
                 .await
                 .map_err(|e| SharesiesError::HttpError(e.to_string()))?;
 

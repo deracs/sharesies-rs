@@ -1,0 +1,10 @@
+{
+  "user": {
+    "id": "1",
+    "name": "Test User",
+    "portfolio_id": "123"
+  },
+  "distill_token": "token123",
+  "distill_token_v2": "tokenv2",
+  "rakaia_token": "rakaia123"
+}

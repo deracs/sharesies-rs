@@ -8,7 +8,7 @@ use std::sync::Arc;
 
 #[derive(Debug, Clone)]
 pub struct ApiService {
-    client: Client,
+    pub client: Client,
     pub token_storage: TokenStorage,
 }
 
