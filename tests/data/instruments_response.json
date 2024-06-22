@@ -1,0 +1,109 @@
+{
+  "total": 13,
+  "currentPage": 1,
+  "resultsPerPage": 60,
+  "numberOfPages": 1,
+  "instruments": [
+    {
+      "id": "a31d15e0-f08b-4e9d-8294-beb76a159346",
+      "urlSlug": "nasdaq-msft",
+      "isClientReadOnly": false,
+      "instrumentType": "equity",
+      "isAdr": false,
+      "isUsPartnership": false,
+      "isIlliquid": false,
+      "symbol": "MSFT",
+      "kidsRecommended": false,
+      "isVolatile": false,
+      "name": "Microsoft Corp",
+      "description": "Microsoft Corporation is a technology company. The Company develops and supports software, services, devices, and solutions. The Company’s segments include Productivity and Business Processes, Intelligent Cloud, and More Personal Computing. The Productivity and Business Processes segment consists of products and services in its portfolio of productivity, communication, and information services. This segment primarily comprises: Office Commercial, Office Consumer, LinkedIn, and Dynamics business solutions. The Intelligent Cloud segment consists of server products and cloud services, including Azure and other cloud services, SQL Server, Windows Server, Visual Studio, System Center, and related Client Access Licenses (CALs), and Nuance and GitHub; and Enterprise Services, including enterprise support services, industry solutions and Nuance professional services. The More Personal Computing segment primarily comprises Windows, devices, gaming, and search and news advertising.",
+      "drivewealthId": "e234cc98-cd08-4b04-a388-fe5c822beea6",
+      "categories": ["Services", "Technology"],
+      "logoIdentifier": "803f71d0-5a29-463e-bec1-952cb39b0616",
+      "logos": {
+        "wide": "/api/v1/public/instrument-logo/a31d15e0-f08b-4e9d-8294-beb76a159346/logo/803f71d0-5a29-463e-bec1-952cb39b0616/1024/0",
+        "thumb": "/api/v1/public/instrument-logo/a31d15e0-f08b-4e9d-8294-beb76a159346/logo/803f71d0-5a29-463e-bec1-952cb39b0616/342/0",
+        "micro": "/api/v1/public/instrument-logo/a31d15e0-f08b-4e9d-8294-beb76a159346/logo/803f71d0-5a29-463e-bec1-952cb39b0616/171/0"
+      },
+      "riskRating": 7,
+      "timeHorizonMin": null,
+      "comparisonPrices": {
+        "1d": {
+          "value": "5.8",
+          "percent": "0.0131",
+          "max": "0",
+          "min": "0"
+        },
+        "1w": {
+          "value": "20.5",
+          "percent": "0.0479",
+          "max": "448.37",
+          "min": "427.87"
+        },
+        "1m": {
+          "value": "28.16",
+          "percent": "0.067",
+          "max": "448.37",
+          "min": "413.52"
+        },
+        "3m": {
+          "value": "31.95",
+          "percent": "0.0767",
+          "max": "448.37",
+          "min": "389.33"
+        },
+        "6m": {
+          "value": "77.64",
+          "percent": "0.2094",
+          "max": "448.37",
+          "min": "367.75"
+        },
+        "1y": {
+          "value": "106.04",
+          "percent": "0.3098",
+          "max": "448.37",
+          "min": "312.14"
+        },
+        "5y": {
+          "value": "315.52",
+          "percent": "2.375",
+          "max": "448.37",
+          "min": "132.21"
+        }
+      },
+      "marketPrice": "448.37",
+      "marketLastCheck": "2024-06-17T19:56:14Z",
+      "extendedHoursPrice": "448.46",
+      "extendedHoursLastCheck": "2024-06-17T23:14:53Z",
+      "tradingStatus": "active",
+      "extendedHoursTradingStatus": "active",
+      "exchangeCountry": "usa",
+      "peRatio": "38.3457",
+      "marketCap": 3332422948855,
+      "parentInstrumentId": null,
+      "fmsFundId": null,
+      "underlyingInstrumentId": null,
+      "sharesPerRight": null,
+      "offerPrice": null,
+      "exercisePrice": null,
+      "websiteUrl": "https://www.microsoft.com/en-us",
+      "exchange": "NASDAQ",
+      "legacyImageUrl": null,
+      "dominantColour": "#93BC99",
+      "pdsDriveId": null,
+      "assetManager": null,
+      "managementType": null,
+      "fixedFeeSpread": null,
+      "managementFeePercent": null,
+      "grossDividendYieldPercent": "0.006779",
+      "annualisedReturnPercent": "0.316579",
+      "firstTradingDateTimeUtc": null,
+      "lastTradingDateTimeUtc": null,
+      "ceo": "Satya Nadella",
+      "employees": 221000,
+      "etfHoldings": null,
+      "incorporationCountry": "USA",
+      "ric": "MSFT.O"
+    }
+  ]
+}
